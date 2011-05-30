@@ -1,0 +1,14 @@
+{
+  "name": "Couch-Socket",
+  "description": "Connecting the CouchDB changes feed with your WebSocket enabled web-application via Node.js",
+  "version": "0.0.1",
+  "homepage": "https://github.com/Emma-Mobil/couch-socket",
+  "author": "Emma-Mobil GbR",
+  "private": true,
+  "dependencies": {
+    "express": "=2.x",
+    "underscore": ">= 1.1.6",
+    "socket.io": ">= 0.6.18"
+  },
+  "engines": { "node": ">= 0.4.7" }
+}
