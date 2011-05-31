@@ -46,7 +46,7 @@ module.exports = class CouchSocket
             [json.doc.id, json.doc.rev] = [json.doc._id,json.doc._rev]
             delete json.doc._id
             delete json.doc._rev
-          
+            console.log db, json.doc.id
             message =
               database:db
               data:json.doc
@@ -60,7 +60,9 @@ module.exports = class CouchSocket
                 _(clients).invoke 'send', message
               
   listen: (server, events) =>
-    next = (clt,cb)->cb()
+    next = (clt, data, cb)->
+      cb() if cb
+      console.log (new Error).stack unless cb
     events ||= {}
     events.onConnect ||= next
     events.onMessage ||= next
@@ -68,13 +70,11 @@ module.exports = class CouchSocket
     @connect()
     @socket = io.listen server    
     @socket.on 'connection', (client) =>
-      console.log arguments
-      events.onConnect client, ()=>
+      events.onConnect client, null, ()=>
         
       client.on 'message', (data) =>
-        data = JSON.parse data
-        events.onMessage data, ()=>
-
+        events.onMessage client, data, ()=>
       client.on 'disconnect', () =>
         console.log "#{client.sessionId} disconnected"
-        events.onDisconnect client if events.onDisconnect
+        events.onDisconnect client , null , ()=>
+          
