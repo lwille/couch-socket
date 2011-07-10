@@ -49,8 +49,8 @@ module.exports = class CouchSocket
             message =
               database:db
               data:json.doc
-            _clients = _(@socket.clients).values()
-            options.filter json.doc, _clients, (clients)=>
+            
+            options.filter json.doc, @clients, (clients)=>
               if clients.length > 0 and clients.length is _clients.length
                 console.log 'filter 1'
                 @socket.broadcast message
@@ -66,13 +66,16 @@ module.exports = class CouchSocket
     events.onConnect ||= next
     events.onMessage ||= next
     events.onDisconnect ||= next
+    @clients = {}
     @connect()
-    io = (require 'socket.io').listen server
-    io.sockets.on 'connection', (socket) =>
+    @io = (require 'socket.io').listen server
+    @io.of('/changes').on 'connection', (socket) =>
+      @clients[socket.sessionId] = socket
       events.onConnect socket, null, ()=>
       socket.on 'message', (data) =>
         events.onMessage socket, data, ()=>
       socket.on 'disconnect', () =>
-        console.log "#{client.sessionId} disconnected"
+        delete @clients[socket.sessionId]
+        console.log "#{socket.sessionId} disconnected"
         events.onDisconnect socket , null , ()=>
           
