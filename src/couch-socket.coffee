@@ -1,5 +1,4 @@
 http  = require 'http'
-io    = require 'socket.io'
 url   = require 'url'
 _     = require 'underscore'
 
@@ -68,13 +67,12 @@ module.exports = class CouchSocket
     events.onMessage ||= next
     events.onDisconnect ||= next
     @connect()
-    @socket = io.listen server    
-    @socket.on 'connection', (client) =>
-      events.onConnect client, null, ()=>
-        
-      client.on 'message', (data) =>
-        events.onMessage client, data, ()=>
-      client.on 'disconnect', () =>
+    io = (require 'socket.io').listen server
+    io.sockets.on 'connection', (socket) =>
+      events.onConnect socket, null, ()=>
+      socket.on 'message', (data) =>
+        events.onMessage socket, data, ()=>
+      socket.on 'disconnect', () =>
         console.log "#{client.sessionId} disconnected"
-        events.onDisconnect client , null , ()=>
+        events.onDisconnect socket , null , ()=>
           
