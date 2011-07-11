@@ -70,13 +70,13 @@ module.exports = class CouchSocket
     @connect()
     @io = (require 'socket.io').listen server
     @io.sockets.on 'connection', (socket) =>  
-      console.log "#{socket.sessionId} connected"    
-      @clients[socket.sessionId] = socket
+      console.log "#{socket.id} connected"    
+      @clients[socket.id] = socket
       events.onConnect socket, null, ()=>
       socket.on 'message', (data) =>
         events.onMessage socket, data, ()=>
       socket.on 'disconnect', () =>
-        delete @clients[socket.sessionId]
-        console.log "#{socket.sessionId} disconnected"
+        delete @clients[socket.id]
+        console.log "#{socket.id} disconnected"
         events.onDisconnect socket , null , ()=>
           
