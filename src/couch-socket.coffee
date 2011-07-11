@@ -69,7 +69,8 @@ module.exports = class CouchSocket
     @clients = {}
     @connect()
     @io = (require 'socket.io').listen server
-    @io.of('/changes').on 'connection', (socket) =>
+    @io.sockets.on 'connection', (socket) =>  
+      console.log "#{socket.sessionId} connected"    
       @clients[socket.sessionId] = socket
       events.onConnect socket, null, ()=>
       socket.on 'message', (data) =>
