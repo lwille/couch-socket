@@ -53,10 +53,10 @@ module.exports = class CouchSocket
             options.filter json.doc, @clients, (clients)=>
               if clients.length > 0 and clients.length is _clients.length
                 console.log 'filter 1'
-                @socket.broadcast message
+                @socket.broadcast.json.send message
               else
                 console.log "filter 2", clients.length
-                _(clients).invoke 'send', message
+                _(clients).invoke 'emit', 'changed', message
               
   listen: (server, events) =>
     next = (clt, data, cb)->
@@ -73,8 +73,6 @@ module.exports = class CouchSocket
       console.log "#{socket.id} connected"    
       @clients[socket.id] = socket
       events.onConnect socket, null, ()=>
-      socket.on 'message', (data) =>
-        events.onMessage socket, data, ()=>
       socket.on 'disconnect', () =>
         delete @clients[socket.id]
         console.log "#{socket.id} disconnected"
