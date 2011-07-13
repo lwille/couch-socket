@@ -53,7 +53,7 @@ module.exports = class CouchSocket
             options.filter json.doc, _clients, (clients)=>
               if clients.length > 0 and clients.length is _clients.length
                 console.log 'filter 1'
-                @socket.broadcast.json.send message
+                @io.broadcast.json.send message
               else
                 console.log "filter 2", clients
                 _(clients).invoke 'emit', 'changed', message
