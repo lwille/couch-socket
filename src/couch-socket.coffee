@@ -49,13 +49,13 @@ module.exports = class CouchSocket
             message =
               database:db
               data:json.doc
-            
-            options.filter json.doc, @clients, (clients)=>
+            _clients = _(@clients).map (client)->client
+            options.filter json.doc, _clients, (clients)=>
               if clients.length > 0 and clients.length is _clients.length
                 console.log 'filter 1'
                 @socket.broadcast.json.send message
               else
-                console.log "filter 2", clients.length
+                console.log "filter 2", clients
                 _(clients).invoke 'emit', 'changed', message
               
   listen: (server, events) =>
