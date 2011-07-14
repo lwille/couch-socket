@@ -4,6 +4,8 @@ _     = require 'underscore'
 
 module.exports = class CouchSocket
   constructor: (options) ->
+    @log = ()->#noop
+    @log = console.log if options.logging
     @db = 
       user: options.user or false
       pass: options.pass or false
