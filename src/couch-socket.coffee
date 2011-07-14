@@ -44,7 +44,7 @@ module.exports = class CouchSocket
           unless json.doc?
             # it's just a heartbeat
           else
-            @log "#{db} changed", json
+            @log "#{db} changed to seq #{json.seq}"
             [json.doc.id, json.doc.rev] = [json.doc._id,json.doc._rev]
             delete json.doc._id
             delete json.doc._rev
