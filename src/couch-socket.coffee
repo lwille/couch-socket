@@ -13,7 +13,7 @@ module.exports = class CouchSocket
       port: options.port or 5984      
     @dbs = options.dbs  
   get: (uri, cb)->
-    console.log uri
+    @log uri
     headers = 
       "Content-Type":"application/json"
     if @db.user && @db.pass
@@ -42,28 +42,29 @@ module.exports = class CouchSocket
       @get "/#{db}", (info)=>
         @get "/#{db}/_changes?feed=continuous&include_docs=true#{if info.update_seq then '&since=' + info.update_seq else ''}", (json)=>
           unless json.doc?
-            console.log "json contains no doc", json
+            # it's just a heartbeat
           else
+            @log "#{db} changed", json
             [json.doc.id, json.doc.rev] = [json.doc._id,json.doc._rev]
             delete json.doc._id
             delete json.doc._rev
-            console.log db, json.doc.id
+            @log db, json.doc.id
             message =
               database:db
               data:json.doc
             _clients = _(@clients).map (client)->client
             options.filter json.doc, _clients, (clients)=>
               if clients.length > 0 and clients.length is _clients.length
-                console.log 'filter 1'
+                @log 'filter 1'
                 @io.sockets.emit 'changed', message
               else
-                console.log "filter 2", clients
+                @log "filter 2", clients
                 _(clients).invoke 'emit', 'changed', message
               
   listen: (server, events) =>
     next = (clt, data, cb)->
       cb() if cb
-      console.log (new Error).stack unless cb
+      console.error (new Error).stack unless cb
     events ||= {}
     events.onConnect ||= next
     events.onMessage ||= next
@@ -72,11 +73,11 @@ module.exports = class CouchSocket
     @connect()
     @io = (require 'socket.io').listen server
     @io.sockets.on 'connection', (socket) =>  
-      console.log "#{socket.id} connected"    
+      @log "#{socket.id} connected"    
       @clients[socket.id] = socket
       events.onConnect socket, null, ()=>
       socket.on 'disconnect', () =>
         delete @clients[socket.id]
-        console.log "#{socket.id} disconnected"
+        @log "#{socket.id} disconnected"
         events.onDisconnect socket , null , ()=>
           
