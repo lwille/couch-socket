@@ -34,7 +34,7 @@ module.exports = class CouchSocket
               cb {}
           catch error
             console.log "parse error", data.toString()
-            console.error error.stack
+            console.error error, error.stack
     .on 'error', console.error
   connect: () ->
     _(@dbs).each (options, db) =>
@@ -45,6 +45,7 @@ module.exports = class CouchSocket
             # it's just a heartbeat
           else
             @log "#{db} changed to seq #{json.seq}"
+            
             [json.doc.id, json.doc.rev] = [json.doc._id,json.doc._rev]
             delete json.doc._id
             delete json.doc._rev
