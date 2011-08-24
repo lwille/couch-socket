@@ -12,7 +12,7 @@ module.exports = class CouchSocket
       host: options.host or 'localhost'
       port: options.port or 5984      
     @dbs = options.dbs  
-  get: (uri, cb)->
+  get: (uri, cb)=>
     @log uri
     headers = 
       "Content-Type":"application/json"
