@@ -17,7 +17,6 @@ module.exports = class CouchSocket
     headers = 
       "Content-Type":"application/json"
     if @db.user && @db.pass
-      console.log "Signing into CouchDB as #{@db.user}"
       headers['Authorization'] = 'Basic ' + new Buffer(@db.user + ':' + @db.pass).toString('base64')
     http.get
       host: @db.host
